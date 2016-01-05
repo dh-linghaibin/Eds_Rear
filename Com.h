@@ -5,5 +5,7 @@
 
 #include "Type.h"
 
+void ComInit(void);
+
 
 #endif

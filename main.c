@@ -1,9 +1,13 @@
 
 
 #include "Sys.h"
+#include "Com.h"
 
 int main( void )
 {
     SysInit();
-    return 0;
+    ComInit();
+    while(1) {
+        
+    }
 }
