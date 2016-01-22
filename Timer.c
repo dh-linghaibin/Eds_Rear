@@ -1,6 +1,6 @@
 
 #include "Timer.h"
-
+#include "Moter.h"
 
 void TimerInit(void) {
     TIM4_IER = 0x00;//       
@@ -13,19 +13,43 @@ void TimerInit(void) {
     TIM4_CR1 = 0x01;  
 }
 
+static u8 time_flag = 0;
+
+u8 TimerGetTimeFlag(void) {
+    return time_flag;
+}
+
+void TimerClearTimeFlag(void) {
+    time_flag = 0;
+}
+
+static u16 time_speed = 0;
+
+u16 TimerGetSpeed(void) {
+    return time_speed;
+}
 
 #pragma vector=0x19
 __interrupt void TIM4_UPD_OVF_IRQHandler(void)
 {
     static u16 count_time = 0;
+    static u8 count_sleep = 0;
     TIM4_SR = 0x00;
     
-    if(count_time < 500) {
+    if(count_time < 400) {//400 test for 2016/1/19
         count_time++;
     } else {
         count_time = 0;
+        time_flag++;
     }
     
+    if(count_sleep < 50) {
+        count_sleep++;
+    } else {
+        count_sleep = 0;
+        time_speed = MoterGetSleep();
+        MoterSetSleep(0);
+    }
     return;
 }
 

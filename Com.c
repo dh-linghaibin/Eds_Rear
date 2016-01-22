@@ -134,8 +134,19 @@ u8 ComRead(u8 data_s[]) {
 
 
 static u8 com_date[5];
-
 static u8 rs_ok = 0;//whether it has received data
+
+u8 ComGetData(u8 num) {
+    return com_date[num];
+}
+
+u8 ComGetFlag(void) {
+    return rs_ok;
+}
+
+void ComClearFlag(void) {
+    rs_ok = 0;
+}
 
 #pragma vector=8
 __interrupt void EXTI_PORTD_IRQHandler(void)
