@@ -1595,6 +1595,9 @@
   <file>
     <name>$PROJ_DIR$\Timer.c</name>
   </file>
+  <file>
+    <name>$PROJ_DIR$\Type.c</name>
+  </file>
 </project>
 
 

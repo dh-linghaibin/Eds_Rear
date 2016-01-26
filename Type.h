@@ -17,6 +17,9 @@ typedef signed long    s32;
 #define INTOFF  asm("sim");//closs interrupt
 #define MCUSLEEP asm("halt");//sleep
 
+u8 TypeDecomposeU16(u16 data, u8 cmd);
+u16 TypeCombinationU16(u8 data_h, u8 data_l);
+
 //include file
 #include "iostm8s103f3.h"
 

@@ -94,7 +94,6 @@ u16 MoterReadResistancePosition(void) {
 u16 MoterReadCurrent(void) {
     return MoterGetAd(3);
 }
-static u16 spseed = 0;
 
 void MoterSpeed(u8 cmd, u8 speed) {
     switch(cmd) {
@@ -107,13 +106,11 @@ void MoterSpeed(u8 cmd, u8 speed) {
             MOTER_SLEEP = 1;//推出睡眠	
             TIM1_CCR1L = 0x00;//占空比值
             TIM1_CCR2L = speed;//占空比值
-            spseed = speed;
         break;
         case 2:
             MOTER_SLEEP = 1;//推出睡眠	
             TIM1_CCR1L = speed;  //占空比值
             TIM1_CCR2L = 0x00;//占空比值
-            spseed = speed;
         break;
         case 3:
             MOTER_SLEEP = 1;//推出睡眠	

@@ -8,7 +8,7 @@ void ComInit(void) {
     //Watch
     PD_DDR_DDR4 = 0;
     PD_CR1_C14 = 0;
-    PD_CR2_C24 = 1;
+    PD_CR2_C24 = 1;  //test
     
     //外部中断初始化
 	EXTI_CR1 &= ~BIT(6);//开启PD口中断
@@ -85,7 +85,7 @@ u8 ComRead(u8 data_s[]) {
 			return 0x44;
 		}
 	}
-	if(wait > 30) {
+	if(wait > 10) {
 		wait = 0;
 		COM_BIT_DR = 1;//设置为输出
 		COM_BIT_OUT = 0;
@@ -110,7 +110,7 @@ u8 ComRead(u8 data_s[]) {
 						return 0x44;
 					}
 				}
-				if(wait > 25) {//为1
+				if(wait > 11) {//为1
 					data|=0x01;  
 				}
 				wait = 0;					
