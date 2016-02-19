@@ -11,10 +11,6 @@
 #include "Eeprom.h"
 
 
-u8 i = 0;
-u8 dr = 0;
-u16 weizhi = 0;
-
 int main( void ) {
     SysInit();
     EeepromInit();
@@ -25,42 +21,62 @@ int main( void ) {
     TimerInit();
     INTEN
     while(1) {
-        if(TimerGetTimeFlag() == 4) {
+        if(TimerGetTimeFlag() == 60) {
             TimerClearTimeFlag();
-            if(dr == 0) {
-                if(i < 10) {
-                    i++;
-                } else {
-                    i = 9;
-                    dr = 1;
-                }
-            } else {
-                if(i > 0) {
-                    i--;
-                } else {
-                    i = 1;
-                    dr = 0;
-                }
-            }
+            //MoterSleep();
             //ControlRunPosition(ControlCalculateGrating(i));
         }
         if(ComGetFlag() == 0x80) {
+            u8 flag = 0;
             ComClearFlag();
+            TimerClearTimeFlag();
+            MoterOpen();
+            LedSet(1);
             switch(ComGetData(0)) {
                 case add_stal:
+                    flag = ControlSetStallsAdd();
+                    if(flag != 0x44) {
+                        if(ControlRunPosition(ControlCalculateGrating(flag)) == 0x44) {
+                            ComSendCmd(stuck, ControlGetStall() ,0 ,0);
+                        } else {
+                            ComSendCmd(dce_gear, ControlGetStall() ,0 ,0);
+                        }
+                    } else {
+                        ComSendCmd(dce_gear, ControlGetStall() ,0 ,0);
+                    }
                 break;
                 case sub_stal:
+                    flag = ControlSetStallsSub();
+                    if(flag != 0x44) {
+                        ControlRunPosition(ControlCalculateGrating(flag));
+                    } else {
+                        
+                    }
+                    ComSendCmd(dce_gear, ControlGetStall() ,0 ,0);
                 break;
                 case add_setp:
+                    //ControlRunPosition(-5);
+                    MoterSpeed(1, 200);
+                    DelayMs(30);
+                    MoterSpeed(3,0);//stop
                 break;
                 case sub_setp:
+                    //ControlRunPosition(5);
+                    MoterSpeed(2, 200);
+                    DelayMs(30);
+                    MoterSpeed(3,0);//stop
                 break;
                 case dce_gear:
+                    ComSendCmd(dce_gear, ControlGetStall() ,0 ,0);
                 break;
                 case set_inti:
+                    ControlSetStart();
                 break;
                 default:break;
             }
+            ComClearData();
+            LedSet(0);
+            //MoterSleep();
         }
     }
 }

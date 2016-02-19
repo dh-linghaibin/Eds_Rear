@@ -9,6 +9,8 @@ void ComInit(void);
 u8 ComGetFlag(void);
 void ComClearFlag(void);
 u8 ComGetData(u8 num);
+void ComSendCmd(u8 cmd,u8 par1,u8 par2,u8 par3);
+void ComClearData(void);
 
 #define add_stal 0xe1//¼Óµµ
 #define sub_stal 0xe2//¼õµµ

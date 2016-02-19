@@ -1,6 +1,7 @@
 
 #include "Moter.h"
 #include "Delay.h"
+#include "Led.h"
 
 #define MOTER_SLEEP PC_ODR_ODR5
 #define ResistanceEN PA_ODR_ODR2
@@ -71,6 +72,27 @@ void MoterInit(void) {
     
     MOTER_SLEEP = 1;
     ResistanceEN = 0; //OPEN 
+}
+
+static u8 sleep_bit = 0;
+
+void MoterSleep(void) {
+    LedSet(1);
+    MOTER_SLEEP = 0;
+    ResistanceEN = 1;//clear
+    sleep_bit = 1;
+    DelayMs(100);
+    MCUSLEEP
+}
+
+void MoterOpen(void) {
+    if(sleep_bit == 1) {
+        sleep_bit = 0;
+        LedSet(0);
+        MOTER_SLEEP = 1;
+        ResistanceEN = 0;//clear
+        DelayMs(900);
+    }
 }
 
 u16 MoterGetAd(u8 poss) {
