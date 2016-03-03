@@ -76,7 +76,7 @@ void MoterInit(void) {
 
 static u8 sleep_bit = 0;
 
-void MoterSleep(void) {
+void  MoterSleep(void) {
     LedSet(1);
     MOTER_SLEEP = 0;
     ResistanceEN = 1;//clear
@@ -117,7 +117,12 @@ u16 MoterReadCurrent(void) {
     return MoterGetAd(3);
 }
 
-void MoterSpeed(u8 cmd, u8 speed) {
+void MoterSpeed(u8 cmd, u8 speed) { 
+    if(cmd == 1) {
+        cmd = 2;
+    } else if(cmd == 2) {
+        cmd = 1;
+    }
     switch(cmd) {
         case 0:
             MOTER_SLEEP = 0;//ÍÆ³öË¯Ãß	

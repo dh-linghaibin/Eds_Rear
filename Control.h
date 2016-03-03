@@ -14,5 +14,7 @@ u8 ControlSetStallsAdd(void);
 u8 ControlGetStall(void);
 void ControlSetStart(void);
 
+u8 ControlSetp(u16 num, u8 dr);
+
 #endif
 

@@ -1,5 +1,4 @@
 
-
 #include "Sys.h"
 #include "Com.h"
 #include "Led.h"
@@ -10,6 +9,7 @@
 #include "Control.h"
 #include "Eeprom.h"
 
+u16 er = 0;
 
 int main( void ) {
     SysInit();
@@ -21,9 +21,10 @@ int main( void ) {
     TimerInit();
     INTEN
     while(1) {
-        if(TimerGetTimeFlag() == 60) {
+        //er = ConterResistancePositionFiltering();//get position
+        if(TimerGetTimeFlag() == 20) {
             TimerClearTimeFlag();
-            //MoterSleep();
+            MoterSleep();
             //ControlRunPosition(ControlCalculateGrating(i));
         }
         if(ComGetFlag() == 0x80) {
@@ -37,6 +38,8 @@ int main( void ) {
                     flag = ControlSetStallsAdd();
                     if(flag != 0x44) {
                         if(ControlRunPosition(ControlCalculateGrating(flag)) == 0x44) {
+                            ControlSetStallsSub();
+                            ControlRunPosition(ControlCalculateGrating(flag));
                             ComSendCmd(stuck, ControlGetStall() ,0 ,0);
                         } else {
                             ComSendCmd(dce_gear, ControlGetStall() ,0 ,0);
@@ -48,23 +51,25 @@ int main( void ) {
                 case sub_stal:
                     flag = ControlSetStallsSub();
                     if(flag != 0x44) {
-                        ControlRunPosition(ControlCalculateGrating(flag));
+                        if( ControlRunPosition(ControlCalculateGrating(flag)) == 0x44) {
+                            ControlSetStallsAdd();
+                            ControlRunPosition(ControlCalculateGrating(flag));
+                            ComSendCmd(stuck, ControlGetStall() ,0 ,0);
+                        } else {
+                            ComSendCmd(dce_gear, ControlGetStall() ,0 ,0);
+                        }
                     } else {
-                        
+                        ComSendCmd(dce_gear, ControlGetStall() ,0 ,0);
                     }
                     ComSendCmd(dce_gear, ControlGetStall() ,0 ,0);
                 break;
                 case add_setp:
                     //ControlRunPosition(-5);
-                    MoterSpeed(1, 200);
-                    DelayMs(30);
-                    MoterSpeed(3,0);//stop
+                    ControlSetp(10,1);
                 break;
                 case sub_setp:
                     //ControlRunPosition(5);
-                    MoterSpeed(2, 200);
-                    DelayMs(30);
-                    MoterSpeed(3,0);//stop
+                    ControlSetp(10,2);
                 break;
                 case dce_gear:
                     ComSendCmd(dce_gear, ControlGetStall() ,0 ,0);
