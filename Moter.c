@@ -79,19 +79,19 @@ static u8 sleep_bit = 0;
 void  MoterSleep(void) {
     LedSet(1);
     MOTER_SLEEP = 0;
-    ResistanceEN = 1;//clear
+    //ResistanceEN = 1;//clear
     sleep_bit = 1;
     DelayMs(100);
     MCUSLEEP
 }
 
 void MoterOpen(void) {
-    if(sleep_bit == 1) {
+    if(1 == sleep_bit) {
         sleep_bit = 0;
-        LedSet(0);
+        //LedSet(0);
         MOTER_SLEEP = 1;
-        ResistanceEN = 0;//clear
-        DelayMs(900);
+        //ResistanceEN = 0;//clear
+        //DelayMs(900);
     }
 }
 

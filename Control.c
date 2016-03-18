@@ -9,7 +9,7 @@
 
 #define SPEEDP 2.5
                                 // 0,2000,4500,6500,8500,10000,12000,14500,16500,19000,21000                 
-const static u16 stalls_add[11] = {0,2200,4800,6800,8800,11000,13400,15700,18200,20500,23000}; //21000
+const static u16 stalls_add[11] = {0,2200,4800,6800,8800,11000,13400,15700,18200,20500,23500}; //21000
 static u16 stalls_start = 26000;  //19000
 static u8  stalls = 0;
 
@@ -133,9 +133,6 @@ u8 ControlSetp(u16 num, u8 dr) {
 u8 ControlRunPosition(int num) {
     u8 dr = 0;
     u16 setp_run = 0;
-   // u16 position_difference = 0;
-    //u8 sleep_sub = 0;
-   // u16 current = 0,current_count = 0;
     MoterSetCodingSite(0);//clear
     if(num > 0) {
         dr = 1;
@@ -171,42 +168,6 @@ u8 ControlRunPosition(int num) {
     if(ControlSetp(setp_run, dr) == 0x44) {
         return 0x44;
     }
-    /*
-    do {
-        position_difference = num - MoterReadCodingSite();
-        MoterSpeed(dr, (u8)((100 - (TimerGetSpeed() + sleep_sub) ) * SPEEDP));
-        if(position_difference < 10) {
-            sleep_sub = 40 - position_difference * 5;
-        }
-        current = MoterReadCurrent();
-        if(current > 55000) {
-            if(current_count < 4000) {
-                current_count++;
-            } else {
-                MoterSpeed(3,0);//stop
-                return 0x44;
-            }
-        } else {
-            current_count = 0;
-        }
-    } while(position_difference > 3);
-    MoterSpeed(3,0);//stop
-    if(dr == 1) {
-        DelayMs(800);
-    } else {
-        DelayMs(300);
-    }
-    if(dr == 1) {//下档 回来反一下方向
-        dr = 2;
-        MoterSpeed(dr,150);
-        DelayMs(40);
-    } else {
-        MoterSpeed(dr,150);
-        DelayMs(80);
-    }
-    //DelayMs(50);
-    MoterSpeed(3,0);//stop
-    */
     ControlSetStall(stalls_fist);//suff
     return 0x80;
 }

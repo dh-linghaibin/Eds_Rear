@@ -1,16 +1,5 @@
-[InterruptLog]
-LogEnabled=0
-SumEnabled=0
-GraphEnabled=0
-ShowTimeLog=1
-ShowTimeSum=1
-SumSortOrder=0
-[DataLog]
-LogEnabled=0
-SumEnabled=0
-GraphEnabled=0
-ShowTimeLog=1
-ShowTimeSum=1
+[DebugChecksum]
+Checksum=1889840673
 [Stack]
 FillEnabled=0
 OverflowWarningsEnabled=1
@@ -21,37 +10,10 @@ UseTrigger=1
 TriggerName=main
 LimitSize=0
 ByteLimit=50
-[Breakpoints2]
-Count=0
-[Interrupts]
-Enabled=1
-[MemoryMap]
-Enabled=0
-Base=0
-UseAuto=0
-TypeViolation=1
-UnspecRange=1
-ActionState=1
-[Trace1]
-Enabled=0
-ShowSource=1
-[DebugChecksum]
-Checksum=-1704272049
 [CallStack]
 ShowArgs=0
 [Disassembly]
 MixedMode=1
-[array_types]
-Fmt0=u8[5]	4	0
-[watch_formats]
-Fmt0={W}0:data	4	0
-Fmt1={W}0:data_h	4	0
-Fmt2={W}0:data_l	4	0
-Fmt3={W}0:stalls_start	4	0
-Fmt4={W}42:er	3	0
-Fmt5={W}42:i	3	0
-Fmt6={W}42:stalls	3	0
-Fmt7={W}42:stalls_start	3	0
 [DataSample]
 LogEnabled=0
 GraphEnabled=0
@@ -65,7 +27,9 @@ Category=_ 0
 LoggingEnabled=_ 0
 LogFile=_ ""
 [Breakpoints]
-Count=0
+Bp0=_ "STD_CODE" "{$PROJ_DIR$\main.c}.26.13" 1 0 0 0 "" 0 ""
+Bp1=_ "STD_CODE" "{$PROJ_DIR$\main.c}.32.13" 1 0 0 0 "" 0 ""
+Count=2
 [Aliases]
 Count=0
 SuppressDialog=0

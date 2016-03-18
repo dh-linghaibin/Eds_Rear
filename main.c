@@ -9,7 +9,7 @@
 #include "Control.h"
 #include "Eeprom.h"
 
-u16 er = 0;
+
 
 int main( void ) {
     SysInit();
@@ -21,18 +21,17 @@ int main( void ) {
     TimerInit();
     INTEN
     while(1) {
-        //er = ConterResistancePositionFiltering();//get position
-        if(TimerGetTimeFlag() == 20) {
+        if(TimerGetTimeFlag() == 5) {
             TimerClearTimeFlag();
             MoterSleep();
-            //ControlRunPosition(ControlCalculateGrating(i));
         }
+        LedTimeService();
         if(ComGetFlag() == 0x80) {
             u8 flag = 0;
             ComClearFlag();
             TimerClearTimeFlag();
             MoterOpen();
-            LedSet(1);
+            LedSetModeFlicker(1);
             switch(ComGetData(0)) {
                 case add_stal:
                     flag = ControlSetStallsAdd();
@@ -64,11 +63,9 @@ int main( void ) {
                     ComSendCmd(dce_gear, ControlGetStall() ,0 ,0);
                 break;
                 case add_setp:
-                    //ControlRunPosition(-5);
                     ControlSetp(10,1);
                 break;
                 case sub_setp:
-                    //ControlRunPosition(5);
                     ControlSetp(10,2);
                 break;
                 case dce_gear:
@@ -80,8 +77,7 @@ int main( void ) {
                 default:break;
             }
             ComClearData();
-            LedSet(0);
-            //MoterSleep();
+            //LedSet(0);
         }
     }
 }
