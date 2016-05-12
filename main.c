@@ -19,9 +19,10 @@ int main( void ) {
     LedInit();
     MoterInit();
     TimerInit();
+    DelayMs(100);//等待系统上电稳定
     INTEN
     while(1) {
-        if(TimerGetTimeFlag() == 5) {
+        if(TimerGetTimeFlag() == 800) {
             TimerClearTimeFlag();
             MoterSleep();
         }
@@ -63,10 +64,10 @@ int main( void ) {
                     ComSendCmd(dce_gear, ControlGetStall() ,0 ,0);
                 break;
                 case add_setp:
-                    ControlSetp(10,1);
+                    ControlSetp(5,1);
                 break;
                 case sub_setp:
-                    ControlSetp(10,2);
+                    ControlSetp(5,2);
                 break;
                 case dce_gear:
                     ComSendCmd(dce_gear, ControlGetStall() ,0 ,0);

@@ -9,7 +9,7 @@
 
 #define SPEEDP 2.5
                                 // 0,2000,4500,6500,8500,10000,12000,14500,16500,19000,21000                 
-const static u16 stalls_add[11] = {0,2200,4800,6800,8800,11000,13400,15700,18200,20500,23500}; //21000
+const static u16 stalls_add[11] = {0,2200,4800,6800,8800,11000,13400,15700,18200,20500,23000}; //21000
 static u16 stalls_start = 26000;  //19000
 static u8  stalls = 0;
 
@@ -19,6 +19,7 @@ void ControlInit(void) {
         EepromWrite(11, TypeDecomposeU16(stalls_start, 0));
         EepromWrite(12, TypeDecomposeU16(stalls_start, 1));
         EepromWrite(13, stalls);
+        Write_Option_Byte();//设置使用第二功能
     }
     stalls_start = TypeCombinationU16(EepromRead(11), EepromRead(12));
     stalls = EepromRead(13);
@@ -115,12 +116,15 @@ u8 ControlSetp(u16 num, u8 dr) {
             sleep_sub = 40 - position_difference * 5;
         }
         current = MoterReadCurrent();
-        if(current > 55000) {
-            if(current_count < 4000) {
+        if(current > 65000) { //55000 新的值还没有经过测试
+            if(current_count < 500) { //4000
                 current_count++;
             } else {
                 MoterSpeed(3,0);//stop
-                return 0x44;
+                //return 0x44; 还未经过测试
+                while() {//等待恢复
+                    current = MoterReadCurrent();
+                }
             }
         } else {
             current_count = 0;

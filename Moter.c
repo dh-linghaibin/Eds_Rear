@@ -90,7 +90,7 @@ void MoterOpen(void) {
         sleep_bit = 0;
         //LedSet(0);
         MOTER_SLEEP = 1;
-        //ResistanceEN = 0;//clear
+       // ResistanceEN = 0;//clear
         //DelayMs(900);
     }
 }
