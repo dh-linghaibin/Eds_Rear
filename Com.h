@@ -22,5 +22,5 @@ void ComClearData(void);
 #define set_end 0x08//设置结束位
 #define reset 0x09//复位
 #define stuck 0x0a//卡死
-
+#define set_gear 0x0b//设置当前档位
 #endif

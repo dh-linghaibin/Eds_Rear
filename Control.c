@@ -5,7 +5,7 @@
 #include "Eeprom.h"
 #include "Delay.h"
 
-#define TRANDFORMATIONP 50
+#define TRANDFORMATIONP 50 //电阻转脉冲系数
 
 #define SPEEDP 2.5
                                 // 0,2000,4500,6500,8500,10000,12000,14500,16500,19000,21000                 
@@ -72,6 +72,15 @@ u8 ControlSetStallsAdd(void) {
     }
 }
 
+//设置档位
+u8 ControlSetStallsSet(u8 set_stall) {
+    if(set_stall < 10) {
+        return set_stall;
+    } else {
+        return 0x44;
+    }
+}
+
 u8 ControlGetStall(void) {
     return stalls;
 }
@@ -81,6 +90,7 @@ void ControlSetStall(u8 cmd) {
     EepromWrite(13, stalls);
 }
 
+u16 xx2 = 0;
 
 int ControlCalculateGrating(u8 stalss) {
     u16 res_position_absolutely = 0;
@@ -89,6 +99,7 @@ int ControlCalculateGrating(u8 stalss) {
     u8 symbol_bit = 0;
     int rotate_num = 0;
     res_position_absolutely = stalls_add[stalss] + stalls_start;//count position
+    xx2 = res_position_absolutely;
     res_position_new = ConterResistancePositionFiltering();//get position
     if(res_position_absolutely > res_position_new) {
         symbol_bit = 0;
@@ -108,6 +119,7 @@ u8 ControlSetp(u16 num, u8 dr) {
     u16 position_difference = 0;//位置计算
     u16 current = 0,current_count = 0;//保护
     u8 sleep_sub = 0;//速度环
+    u16 time_count = 0;//超时时间
     MoterSetCodingSite(0);//clear
     do {
         position_difference = num - MoterReadCodingSite();
@@ -116,18 +128,27 @@ u8 ControlSetp(u16 num, u8 dr) {
             sleep_sub = 40 - position_difference * 5;
         }
         current = MoterReadCurrent();
-        if(current > 65000) { //55000 新的值还没有经过测试
-            if(current_count < 500) { //4000
+        if(current > 50000) { //55000 新的值还没有经过测试
+            if(current_count < 1500) { //4000
                 current_count++;
             } else {
                 MoterSpeed(3,0);//stop
-                //return 0x44; 还未经过测试
-                while() {//等待恢复
-                    current = MoterReadCurrent();
-                }
+                return 0x44; //还未经过测试
+  //              while() {//等待恢复
+//                    current = MoterReadCurrent();
+//                }
             }
         } else {
             current_count = 0;
+        }
+        //超时时间统计
+        if(time_count < 10000) {
+            time_count++;
+        } else {
+            //超时退出
+            time_count = 0;
+            MoterSpeed(3,0);//stop
+            return 0x44; //还未经过测试
         }
     } while(position_difference > 3);
     MoterSpeed(3,0);//stop

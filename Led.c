@@ -8,7 +8,7 @@ void LedInit(void) {
     PD_DDR_DDR6 = 1;
     PD_CR1_C16 = 1;
     PD_CR2_C26 = 0;
-    
+    LedSetModeFlicker(2);
     LED = 0;
 }
 

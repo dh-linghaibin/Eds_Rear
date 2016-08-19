@@ -9,7 +9,7 @@
 #include "Control.h"
 #include "Eeprom.h"
 
-
+u16 xxx = 0;
 
 int main( void ) {
     SysInit();
@@ -19,16 +19,18 @@ int main( void ) {
     LedInit();
     MoterInit();
     TimerInit();
-    DelayMs(100);//等待系统上电稳定
+    DelayMs(50);//等待系统上电稳定
     INTEN
     while(1) {
-        if(TimerGetTimeFlag() == 800) {
+        //xxx = ConterResistancePositionFiltering();//get position
+        if(TimerGetTimeFlag() == 60) {
             TimerClearTimeFlag();
-            MoterSleep();
+           // MoterSleep();
         }
         LedTimeService();
         if(ComGetFlag() == 0x80) {
             u8 flag = 0;
+            u16 adr = 0;
             ComClearFlag();
             TimerClearTimeFlag();
             MoterOpen();
@@ -38,8 +40,9 @@ int main( void ) {
                     flag = ControlSetStallsAdd();
                     if(flag != 0x44) {
                         if(ControlRunPosition(ControlCalculateGrating(flag)) == 0x44) {
-                            ControlSetStallsSub();
-                            ControlRunPosition(ControlCalculateGrating(flag));
+                            DelayMs(20);//等待系统上电稳定
+                            //ControlSetStallsSub();
+                            //ControlRunPosition(ControlCalculateGrating(flag));
                             ComSendCmd(stuck, ControlGetStall() ,0 ,0);
                         } else {
                             ComSendCmd(dce_gear, ControlGetStall() ,0 ,0);
@@ -52,8 +55,9 @@ int main( void ) {
                     flag = ControlSetStallsSub();
                     if(flag != 0x44) {
                         if( ControlRunPosition(ControlCalculateGrating(flag)) == 0x44) {
-                            ControlSetStallsAdd();
-                            ControlRunPosition(ControlCalculateGrating(flag));
+                            DelayMs(20);//等待系统上电稳定
+                           // ControlSetStallsAdd();
+                           // ControlRunPosition(ControlCalculateGrating(flag));
                             ComSendCmd(stuck, ControlGetStall() ,0 ,0);
                         } else {
                             ComSendCmd(dce_gear, ControlGetStall() ,0 ,0);
@@ -63,17 +67,38 @@ int main( void ) {
                     }
                     ComSendCmd(dce_gear, ControlGetStall() ,0 ,0);
                 break;
-                case add_setp:
-                    ControlSetp(5,1);
+                case add_setp://增加位置保护
+                    adr = ConterResistancePositionFiltering();//get position
+                    if(adr > 100) {
+                        ControlSetp(5,1);
+                    }
                 break;
-                case sub_setp:
-                    ControlSetp(5,2);
+                case sub_setp://增加位置保护
+                    adr = ConterResistancePositionFiltering();//get position
+                    if(adr < 60000) {
+                        ControlSetp(5,2);
+                    }
                 break;
                 case dce_gear:
                     ComSendCmd(dce_gear, ControlGetStall() ,0 ,0);
                 break;
                 case set_inti:
                     ControlSetStart();
+                break;
+                case set_gear:
+                    flag = ControlSetStallsSet(ComGetData(1));
+                    if(flag != 0x44) {
+                        if(ControlRunPosition(ControlCalculateGrating(flag)) == 0x44) {
+                            DelayMs(20);//等待系统上电稳定
+                            //ControlSetStallsSub();
+                            //ControlRunPosition(ControlCalculateGrating(flag));
+                            ComSendCmd(stuck, ControlGetStall() ,0 ,0);
+                        } else {
+                            ComSendCmd(dce_gear, ControlGetStall() ,0 ,0);
+                        }
+                    } else {
+                        ComSendCmd(dce_gear, ControlGetStall() ,0 ,0);
+                    }
                 break;
                 default:break;
             }
