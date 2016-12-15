@@ -10,6 +10,8 @@ u16 TimerGetTimeFlag(void);
 void TimerClearTimeFlag(void);
 u16 TimerGetSpeed(void);
 
+void TimerSetSpeed(u16 cmd);
+
 #endif
 
 

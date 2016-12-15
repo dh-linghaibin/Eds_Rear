@@ -15,6 +15,17 @@ u8 ControlGetStall(void);
 void ControlSetStart(void);
 
 u8 ControlSetp(u16 num, u8 dr);
+u8 ControlSetpSmall(u16 num, u8 dr);
+//…Ë÷√µµŒª
+u8 ControlSetStallsSet(u8 set_stall);
 
+/*√∞≈›≈≈–Ú*/
+u16 ConterResistancePositionFiltering(void);
+
+void ControlSetStalls(u8 num,u16 data);
+
+void ControlSetStallsStart(u16 data);
+
+void ControlEleSet(u16 time);
 #endif
 

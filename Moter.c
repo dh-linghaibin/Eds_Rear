@@ -4,7 +4,7 @@
 #include "Led.h"
 
 #define MOTER_SLEEP PC_ODR_ODR5
-#define ResistanceEN PA_ODR_ODR2
+#define ResistanceEN PD_ODR_ODR5
 
 void MoterInit(void) {
     //position
@@ -16,9 +16,9 @@ void MoterInit(void) {
     PA_CR1_C13 = 1;
     PA_CR2_C23 = 1;
     //Position en
-    PA_DDR_DDR2 = 1;
-    PA_CR1_C12 = 1;
-    PA_CR2_C22 = 0;
+    PD_DDR_DDR5 = 1;
+    PD_CR1_C15 = 1;
+    PD_CR2_C25 = 0;
     //moto in1 
     PC_DDR_DDR7 = 1;
     PC_CR1_C17 = 1;
@@ -76,11 +76,13 @@ void MoterInit(void) {
 
 static u8 sleep_bit = 0;
 
-void  MoterSleep(void) {
+void MoterSleep(void) {
     LedSet(1);
     MOTER_SLEEP = 0;
     //ResistanceEN = 1;//clear
     sleep_bit = 1;
+    EXTI_CR1 |= BIT(6);//仅下降沿出发
+	EXTI_CR1 &= ~BIT(7);
     DelayMs(100);
     MCUSLEEP
 }
@@ -90,6 +92,8 @@ void MoterOpen(void) {
         sleep_bit = 0;
         //LedSet(0);
         MOTER_SLEEP = 1;
+        EXTI_CR1 &= ~BIT(6);//开启PD口中断
+        EXTI_CR1 &= ~BIT(7);
        // ResistanceEN = 0;//clear
         //DelayMs(900);
     }
@@ -111,18 +115,18 @@ u16 MoterGetAd(u8 poss) {
 }
 
 u16 MoterReadResistancePosition(void) {
-    return MoterGetAd(4);
-}
-u16 MoterReadCurrent(void) {
     return MoterGetAd(3);
 }
-
+u16 MoterReadCurrent(void) {
+    return MoterGetAd(4);
+}
+u16 dddd;
 void MoterSpeed(u8 cmd, u8 speed) { 
-    if(cmd == 1) {
-        cmd = 2;
-    } else if(cmd == 2) {
-        cmd = 1;
-    }
+//    if(cmd == 1) {
+//        cmd = 2;
+//    } else if(cmd == 2) {
+//        cmd = 1;
+//    }
     switch(cmd) {
         case 0:
             MOTER_SLEEP = 0;//推出睡眠	
@@ -133,11 +137,13 @@ void MoterSpeed(u8 cmd, u8 speed) {
             MOTER_SLEEP = 1;//推出睡眠	
             TIM1_CCR1L = 0x00;//占空比值
             TIM1_CCR2L = speed;//占空比值
+            dddd = speed;
         break;
         case 2:
             MOTER_SLEEP = 1;//推出睡眠	
             TIM1_CCR1L = speed;  //占空比值
             TIM1_CCR2L = 0x00;//占空比值
+            dddd = speed;
         break;
         case 3:
             MOTER_SLEEP = 1;//推出睡眠	
@@ -165,11 +171,26 @@ u16 MoterGetSleep(void) {
     return coding_sleep;
 }
 
+//u16 max_speed = 0;
+
 #pragma vector=5
 __interrupt void EXTI_PORTA_IRQHandler(void)
 {
     INTOFF
+    //static u8 hz_flag = 0;
     coding_site++;
     coding_sleep++;
+//    if(TimerGetSpeed() == 0) {
+//        TimerSetSpeed(2);
+//        hz_flag = 1;
+//    } else {
+//        if(hz_flag < 10) {
+//            hz_flag++;
+//        } else {
+//            hz_flag = 0;
+//            max_speed = TimerGetSpeed();
+//            TimerSetSpeed(2);
+//        }
+//    }
     INTEN
 }

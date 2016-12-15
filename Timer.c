@@ -29,12 +29,19 @@ u16 TimerGetSpeed(void) {
     return time_speed;
 }
 
+void TimerSetSpeed(u16 cmd) {
+    time_speed = cmd;
+}
+
+//u16 sleep_jl[34];
+//u8 sleep_count = 0;
+
 #pragma vector=0x19
 __interrupt void TIM4_UPD_OVF_IRQHandler(void)
 {
     INTOFF
     static u16 count_time = 0;
-    static u8 count_sleep = 0;
+    //static u16 count_sleep = 0;
     TIM4_SR = 0x00;
     
     if(count_time < 400) {//400 test for 2016/1/19
@@ -44,13 +51,21 @@ __interrupt void TIM4_UPD_OVF_IRQHandler(void)
         time_flag++;
     }
     
-    if(count_sleep < 50) {
-        count_sleep++;
-    } else {
-        count_sleep = 0;
-        time_speed = MoterGetSleep();
-        MoterSetSleep(0);
-    }
+//    if(count_sleep < 10) {
+//        count_sleep++;
+//    } else {
+//        count_sleep = 0;
+//        time_speed = MoterGetSleep();
+//        MoterSetSleep(0);
+//        
+//            if(sleep_count < 34) {
+//                sleep_count++;
+//            } else {
+//                sleep_count = 0;
+//            }
+//            sleep_jl[sleep_count] = time_speed
+//    }
+
     INTEN
     return;
 }
